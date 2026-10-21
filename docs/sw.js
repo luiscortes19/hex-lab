@@ -7,7 +7,7 @@
    Bump CACHE_VERSION whenever a shell file changes, or phones will keep
    serving the old copy forever. */
 
-const CACHE_VERSION = "hexlab-4e24cac766";
+const CACHE_VERSION = "hexlab-858a7508b8";
 const SHELL = [
   "./",
   "./index.html",

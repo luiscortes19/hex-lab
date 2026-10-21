@@ -1,87 +1,111 @@
-<div class="wrap">
+<div class="app" id="app">
 
-  <header>
-    <h1 id="title">Hex Puzzle Lab</h1>
-    <div class="facts">
-      <div class="fact">Placed<b id="f-placed">0 / 12</b></div>
-      <div class="fact">Empty cells<b id="f-empty">56</b></div>
-      <div class="fact">Completions<b id="f-count">…</b></div>
+  <header class="top">
+    <button class="count" id="count" aria-label="Open statistics">
+      <span class="count-num" id="count-num">…</span>
+      <span class="count-sub" id="count-sub">counting</span>
+    </button>
+    <div class="placed" aria-label="Pieces placed">
+      <span id="placed-txt">0 / 12</span>
+      <span class="meter"><span id="placed-bar"></span></span>
     </div>
   </header>
 
-  <div class="bar">
-    <div class="seg" role="group" aria-label="Mode">
-      <button id="btn-play" aria-pressed="true">Play</button>
-      <button id="btn-browse" aria-pressed="false">Completions</button>
+  <main class="stage" id="stage">
+    <svg id="board" class="board-svg" role="img" aria-label="Puzzle board" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="toast" id="toast" hidden></div>
+    <div class="cellcard" id="cellcard" hidden>
+      <button class="x" id="cellcard-x" aria-label="Close">&times;</button>
+      <div id="cellcard-body"></div>
     </div>
-    <span class="stepper" id="stepper" hidden>
-      <button class="ghost" id="btn-prev" aria-label="Previous completion">&#9664;</button>
-      <output id="solpos">1 / 1</output>
-      <button class="ghost" id="btn-next" aria-label="Next completion">&#9654;</button>
-    </span>
-    <span class="group" id="play-tools">
-      <button class="ghost act" id="btn-turn" title="Rotate 60&deg; (R)">&#8635; Turn</button>
-      <button class="ghost act" id="btn-flip" title="Mirror (F)">&#8646; Flip</button>
-      <button class="ghost" id="btn-undo" title="Take back the last piece (Ctrl+Z)">Undo</button>
-    </span>
+  </main>
+
+  <div class="actions" id="actions">
+    <div class="act-row" id="act-idle">
+      <button class="pill" id="btn-undo"><span class="ic">&#8630;</span>Undo</button>
+      <button class="pill" id="btn-hint" aria-pressed="false"><span class="ic">&#9673;</span>Hint</button>
+      <button class="pill" id="btn-heat" aria-pressed="false"><span class="ic">&#9638;</span>Heat</button>
+    </div>
+    <div class="act-row" id="act-held" hidden>
+      <button class="pill big" id="btn-turn"><span class="ic">&#8635;</span>Turn</button>
+      <button class="pill big" id="btn-flip"><span class="ic">&#8646;</span>Flip</button>
+      <button class="pill" id="btn-putback"><span class="ic">&times;</span>Put back</button>
+    </div>
+    <div class="act-row" id="act-browse" hidden>
+      <button class="pill big" id="btn-prev" aria-label="Previous completion">&#9664;</button>
+      <output class="solpos" id="solpos">1 / 1</output>
+      <button class="pill big" id="btn-next" aria-label="Next completion">&#9654;</button>
+    </div>
   </div>
 
-  <div class="bar">
-    <button class="ghost" id="btn-hint" aria-pressed="false" title="Mark the spots that still lead to a solution">Hint</button>
-    <button class="ghost" id="btn-heat" aria-pressed="false" title="Colour each empty cell by the piece that fills it most often">Heat map</button>
-    <button class="ghost" id="btn-coords" aria-pressed="false">Coordinates</button>
-    <button class="ghost" id="btn-download">Download JSON</button>
-  </div>
+  <div class="tray" id="tray" aria-label="Pieces"></div>
+  <div class="browse-note" id="browse-note" hidden>Swipe the board or use the arrows. Ringed cells changed from the previous completion.</div>
 
-  <div class="cols">
-    <div class="board-col">
-      <div class="tray" id="tray">
-        <div class="banner" id="banner" hidden></div>
-        <svg id="board" class="board-svg" role="img" aria-label="Puzzle board"></svg>
-      </div>
+  <nav class="tabs" aria-label="Sections">
+    <button class="tab" id="tab-play" aria-current="page"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3l7.8 4.5v9L12 21l-7.8-4.5v-9z"/></svg>Play</button>
+    <button class="tab" id="tab-browse"><svg class="ic" viewBox="0 0 24 24"><path d="M9 4l5.2 3v6L9 16l-5.2-3V7z"/><path d="M15 8l5.2 3v6L15 20l-5.2-3"/></svg>Solutions</button>
+    <button class="tab" id="tab-stats"><svg class="ic" viewBox="0 0 24 24"><path d="M5 20V11M12 20V5M19 20v-7"/></svg>Stats</button>
+    <button class="tab" id="tab-menu"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</button>
+  </nav>
 
-      <section class="stats" aria-label="Statistics">
-        <div class="stat"><span>Completions</span><b id="s-count">…</b><small id="s-count-note"></small></div>
-        <div class="stat"><span>Pieces locked</span><b id="s-locked">…</b><small>same spot in every completion</small></div>
-        <div class="stat"><span>Cells settled</span><b id="s-settled">…</b><small>always the same piece</small></div>
-        <div class="stat"><span>Search</span><b id="s-search">…</b><small id="s-search-note"></small></div>
-        <div class="cellinfo" id="cellinfo">Tap an empty cell to see which pieces can fill it.</div>
-      </section>
+  <div class="scrim" id="scrim" hidden></div>
+
+  <section class="sheet" id="sheet-stats" aria-label="Statistics" hidden>
+    <div class="grip"></div>
+    <div class="sheet-head"><h2>Statistics</h2><button class="x" data-close aria-label="Close">&times;</button></div>
+    <div class="tiles">
+      <div class="tile"><span>Completions</span><b id="s-count">…</b><small id="s-count-note"></small></div>
+      <div class="tile"><span>Pieces locked</span><b id="s-locked">…</b><small>same spot in every completion</small></div>
+      <div class="tile"><span>Cells settled</span><b id="s-settled">…</b><small>always the same piece</small></div>
+      <div class="tile"><span>Search</span><b id="s-search">…</b><small id="s-search-note"></small></div>
+    </div>
+    <h3>Spots per piece</h3>
+    <p class="note">How many different positions each piece takes across all completions. Fewer spots means less freedom.</p>
+    <div class="spots" id="spots"></div>
+    <p class="note">Tap any empty cell on the board to see which pieces can fill it.</p>
+  </section>
+
+  <section class="sheet" id="sheet-menu" aria-label="Menu" hidden>
+    <div class="grip"></div>
+    <div class="sheet-head"><h2>Menu</h2><button class="x" data-close aria-label="Close">&times;</button></div>
+
+    <h3>New game</h3>
+    <div class="menu-row">
+      <button class="pill wide" id="btn-empty">Empty board</button>
+      <button class="pill wide" id="btn-reset">Back to clues</button>
+    </div>
+    <div class="deal">
+      <span class="deal-label">Clues</span>
+      <button class="pill sq" id="clue-minus" aria-label="Fewer clues">&minus;</button>
+      <output id="clueval">4</output>
+      <button class="pill sq" id="clue-plus" aria-label="More clues">+</button>
+      <button class="pill primary" id="btn-new">Deal</button>
+    </div>
+    <p class="note" id="genstatus" role="status">Deals the chosen number of pieces from a random solution.</p>
+
+    <h3>Board</h3>
+    <div class="toggles">
+      <label class="tgl"><span>Hint</span><small>mark spots that still lead to a solution</small><input type="checkbox" id="opt-hint"></label>
+      <label class="tgl"><span>Heat map</span><small>tint empty cells by their most likely piece</small><input type="checkbox" id="opt-heat"></label>
+      <label class="tgl"><span>Coordinates</span><small>show q,r on every cell</small><input type="checkbox" id="opt-coords"></label>
+      <label class="tgl"><span>Vibration</span><small>buzz when a piece lands or won't fit</small><input type="checkbox" id="opt-buzz" checked></label>
     </div>
 
-    <aside class="rail">
-      <h2>Pieces</h2>
-      <p id="rail-note">Pick a piece and drag it onto the board. Tap a piece on the board to pick it back up.</p>
-      <div class="chips" id="chips"></div>
+    <h3>App</h3>
+    <div class="menu-row">
+      <button class="pill wide" id="btn-install" hidden>Install app</button>
+      <button class="pill wide" id="btn-download">Save position as JSON</button>
+    </div>
+    <p class="note"><span class="pwa" id="pwa" hidden><span class="dot"></span><span id="pwatext">ready offline</span></span></p>
 
-      <h2 class="sub">Start from</h2>
-      <div class="start">
-        <button class="ghost" id="btn-empty">Empty board</button>
-        <button class="ghost" id="btn-reset" title="Back to the dealt clues">Back to clues</button>
-      </div>
-      <div class="gen">
-        <label for="clues">Clues</label>
-        <input type="range" id="clues" min="1" max="11" value="4">
-        <output id="clueval" for="clues">4</output>
-      </div>
-      <button class="ghost primary" id="btn-new">Deal a challenge</button>
-      <p class="status" id="genstatus" role="status"></p>
-      <div class="install">
-        <button class="ghost" id="btn-install" hidden>Install app</button>
-        <span class="pwa" id="pwa" hidden><span class="dot"></span><span id="pwatext">ready offline</span></span>
-      </div>
-    </aside>
-  </div>
-
-  <details>
-    <summary>Load a different puzzle</summary>
-    <div class="panel">
-      <p>Use a <code>polyhex/1</code> file from the toolkit (<code>python3 tools/puzzle_io.py --export puzzle.json</code>). Pick the file or paste it below.</p>
-      <div class="row"><input type="file" id="file" accept=".json,application/json"></div>
-      <textarea id="paste" spellcheck="false" placeholder='{"schema":"polyhex/1","name":"…","board":[[0,0]],"pieces":[…]}'></textarea>
-      <div class="row"><button class="ghost" id="btn-load">Load pasted puzzle</button></div>
+    <details>
+      <summary>Load a different puzzle</summary>
+      <p class="note">Use a <code>polyhex/1</code> file from the toolkit. Pick the file or paste it below.</p>
+      <input type="file" id="file" accept=".json,application/json">
+      <textarea id="paste" spellcheck="false" placeholder='{"schema":"polyhex/1", …}'></textarea>
+      <button class="pill" id="btn-load">Load pasted puzzle</button>
       <div class="msg" id="msg"></div>
-    </div>
-  </details>
+    </details>
+  </section>
 
 </div>
