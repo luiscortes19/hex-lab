@@ -1,0 +1,87 @@
+<div class="wrap">
+
+  <header>
+    <h1 id="title">Hex Puzzle Lab</h1>
+    <div class="facts">
+      <div class="fact">Placed<b id="f-placed">0 / 12</b></div>
+      <div class="fact">Empty cells<b id="f-empty">56</b></div>
+      <div class="fact">Completions<b id="f-count">…</b></div>
+    </div>
+  </header>
+
+  <div class="bar">
+    <div class="seg" role="group" aria-label="Mode">
+      <button id="btn-play" aria-pressed="true">Play</button>
+      <button id="btn-browse" aria-pressed="false">Completions</button>
+    </div>
+    <span class="stepper" id="stepper" hidden>
+      <button class="ghost" id="btn-prev" aria-label="Previous completion">&#9664;</button>
+      <output id="solpos">1 / 1</output>
+      <button class="ghost" id="btn-next" aria-label="Next completion">&#9654;</button>
+    </span>
+    <span class="group" id="play-tools">
+      <button class="ghost act" id="btn-turn" title="Rotate 60&deg; (R)">&#8635; Turn</button>
+      <button class="ghost act" id="btn-flip" title="Mirror (F)">&#8646; Flip</button>
+      <button class="ghost" id="btn-undo" title="Take back the last piece (Ctrl+Z)">Undo</button>
+    </span>
+  </div>
+
+  <div class="bar">
+    <button class="ghost" id="btn-hint" aria-pressed="false" title="Mark the spots that still lead to a solution">Hint</button>
+    <button class="ghost" id="btn-heat" aria-pressed="false" title="Colour each empty cell by the piece that fills it most often">Heat map</button>
+    <button class="ghost" id="btn-coords" aria-pressed="false">Coordinates</button>
+    <button class="ghost" id="btn-download">Download JSON</button>
+  </div>
+
+  <div class="cols">
+    <div class="board-col">
+      <div class="tray" id="tray">
+        <div class="banner" id="banner" hidden></div>
+        <svg id="board" class="board-svg" role="img" aria-label="Puzzle board"></svg>
+      </div>
+
+      <section class="stats" aria-label="Statistics">
+        <div class="stat"><span>Completions</span><b id="s-count">…</b><small id="s-count-note"></small></div>
+        <div class="stat"><span>Pieces locked</span><b id="s-locked">…</b><small>same spot in every completion</small></div>
+        <div class="stat"><span>Cells settled</span><b id="s-settled">…</b><small>always the same piece</small></div>
+        <div class="stat"><span>Search</span><b id="s-search">…</b><small id="s-search-note"></small></div>
+        <div class="cellinfo" id="cellinfo">Tap an empty cell to see which pieces can fill it.</div>
+      </section>
+    </div>
+
+    <aside class="rail">
+      <h2>Pieces</h2>
+      <p id="rail-note">Pick a piece and drag it onto the board. Tap a piece on the board to pick it back up.</p>
+      <div class="chips" id="chips"></div>
+
+      <h2 class="sub">Start from</h2>
+      <div class="start">
+        <button class="ghost" id="btn-empty">Empty board</button>
+        <button class="ghost" id="btn-reset" title="Back to the dealt clues">Back to clues</button>
+      </div>
+      <div class="gen">
+        <label for="clues">Clues</label>
+        <input type="range" id="clues" min="1" max="11" value="4">
+        <output id="clueval" for="clues">4</output>
+      </div>
+      <button class="ghost primary" id="btn-new">Deal a challenge</button>
+      <p class="status" id="genstatus" role="status"></p>
+      <div class="install">
+        <button class="ghost" id="btn-install" hidden>Install app</button>
+        <span class="pwa" id="pwa" hidden><span class="dot"></span><span id="pwatext">ready offline</span></span>
+      </div>
+    </aside>
+  </div>
+
+  <details>
+    <summary>Load a different puzzle</summary>
+    <div class="panel">
+      <p>Use a <code>polyhex/1</code> file from the toolkit (<code>python3 tools/puzzle_io.py --export puzzle.json</code>). Pick the file or paste it below.</p>
+      <div class="row"><input type="file" id="file" accept=".json,application/json"></div>
+      <textarea id="paste" spellcheck="false" placeholder='{"schema":"polyhex/1","name":"…","board":[[0,0]],"pieces":[…]}'></textarea>
+      <div class="row"><button class="ghost" id="btn-load">Load pasted puzzle</button></div>
+      <div class="msg" id="msg"></div>
+    </div>
+  </details>
+
+</div>
